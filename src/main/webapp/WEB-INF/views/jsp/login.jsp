@@ -1,7 +1,11 @@
 <html>
+
 <head>
-    <title>Login</title>
+    <title>First Web Application</title>
 </head>
+
 <body>
-    <h1>Log in</h1>
+My First JSP!!
 </body>
+
+</html>
