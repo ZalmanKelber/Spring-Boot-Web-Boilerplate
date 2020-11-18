@@ -3,8 +3,8 @@
 <html>
 
 <head>
-    <title>Todo's for ${name}</title>
-    <link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <title>Todos for ${name}</title>
+    <link href="webjars/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet" />
 </head>
 
 <body>
