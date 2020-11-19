@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import com.simpleSBApps.webboilerplate.models.Todo;
 import com.simpleSBApps.webboilerplate.services.TodoService;
+import com.simpleSBApps.webboilerplate.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,9 @@ public class TodoController {
     @Autowired
     TodoService todoService;
 
+    @Autowired
+    UserService userService;
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
@@ -32,15 +36,18 @@ public class TodoController {
 
     @RequestMapping(value = "/list-todos", method = RequestMethod.GET)
     public String getListTodos(ModelMap model) {
-        String name = (String) model.get("name");
+        String name = userService.getCurrentUser();
         model.put("todos", todoService.retrieveTodos(name));
         return "list-todos";
     }
 
     @RequestMapping(value = "/add-todo", method = RequestMethod.GET)
     public String getAddTodo(ModelMap model) {
-        model.addAttribute("todo", new Todo(0, (String) model.get("name"), "Default Desc",
-                new Date(), false));
+        model.addAttribute("todo", new Todo(0,
+                userService.getCurrentUser(),
+                                                        "Add description",
+                                                        new Date(),
+                                                        false));
         return "todo";
     }
 
@@ -52,29 +59,31 @@ public class TodoController {
 
     @RequestMapping(value = "/delete-todo", method = RequestMethod.GET)
     public String getDeleteTodo(@RequestParam int id) {
+//        if (id == 1)
+//            throw new RuntimeException();
         todoService.deleteTodo(id);
         return "redirect:/list-todos";
     }
 
     @RequestMapping(value = "/add-todo", method = RequestMethod.POST)
-    public String postAddTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
+    public String postAddTodo(@Valid Todo todo, BindingResult result) {
 
         if(result.hasErrors()){
             return "todo";
         }
 
-        todoService.addTodo((String) model.get("name"), todo.getDesc(), new Date(),
+        todoService.addTodo(userService.getCurrentUser(), todo.getDesc(), new Date(),
                 false);
         return "redirect:/list-todos";
     }
 
     @RequestMapping(value = "/update-todo", method = RequestMethod.POST)
-    public String postUpdateTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
+    public String postUpdateTodo(@Valid Todo todo, BindingResult result) {
 
         if(result.hasErrors()){
             return "todo";
         }
-        todo.setUser((String) model.get("name"));
+        todo.setUser(userService.getCurrentUser());
         todoService.updateTodo(todo);
         return "redirect:/list-todos";
     }
