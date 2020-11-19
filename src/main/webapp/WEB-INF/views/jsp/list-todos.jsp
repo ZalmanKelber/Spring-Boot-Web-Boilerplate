@@ -1,14 +1,4 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
-<html>
-
-<head>
-    <title>Todos for ${name}</title>
-    <link href="webjars/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet" />
-</head>
-
-<body>
-<div class="container">
+<%@ include file="common/header.jspf"%>
     <table class="table table-striped">
         <caption>Your todos are</caption>
         <thead>
@@ -22,13 +12,11 @@
         <tbody>
         <c:forEach items="${todos}" var="todo">
             <tr>
-                <td>${todo.desc}</td>
-                <td>${todo.targetDate}</td>
-                <td>${todo.done ? "completed" : "pending"}</td>
-                <td>
-                    <a type="button" class="btn btn-primaryr" href="/update-todo">Edit</a>
-                    <a type="button" class="btn btn-danger" href="/delete-todo?id=${todo.id}">Delete</a>
-                </td>
+                <td>${todo.getDesc()}</td>
+                <td><fmt:formatDate value="${todo.getTargetDate()}" pattern="dd/MM/yyyy"></fmt:formatDate></td>
+                <td>${todo.isDone() ? "completed" : "pending"}</td>
+                <td><a type="button" class="btn btn-primary" href="/update-todo?id=${todo.getId()}">Edit</a></td>
+                <td><a type="button" class="btn btn-danger" href="/delete-todo?id=${todo.getId()}">Delete</a></td>
             </tr>
         </c:forEach>
         </tbody>
@@ -36,11 +24,4 @@
     <div>
         <a class="button" href="/add-todo">Add a Todo</a>
     </div>
-</div>
-
-<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
-<script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-
-</body>
-
-</html>
+<%@ include file="common/closing.jspf"%>

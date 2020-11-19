@@ -35,6 +35,19 @@ public class TodoService {
         todos.add(new Todo(++todoCount, name, desc, targetDate, isDone));
     }
 
+    public Todo getTodoById(int id) {
+        return todos.stream().filter(t -> t.getId() == id).findFirst().orElse(null);
+    }
+
+    public void updateTodo(Todo todo) {
+        for (int i = 0; i < todos.size(); i++) {
+            if (todos.get(i).equals(todo)) {
+                todos.set(i, todo);
+                break;
+            }
+        }
+    }
+
     public void deleteTodo(int id) {
         Iterator<Todo> iterator = todos.iterator();
         while (iterator.hasNext()) {
