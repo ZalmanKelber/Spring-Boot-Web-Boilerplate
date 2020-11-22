@@ -3,10 +3,13 @@ package com.simpleSBApps.webboilerplate.controllers;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
 import com.simpleSBApps.webboilerplate.models.Todo;
+import com.simpleSBApps.webboilerplate.services.TodoRepository;
 import com.simpleSBApps.webboilerplate.services.TodoService;
 import com.simpleSBApps.webboilerplate.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +28,14 @@ public class TodoController {
     TodoService todoService;
 
     @Autowired
+    TodoRepository todoRepository;
+
+    @Autowired
     UserService userService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
     }
 
@@ -37,14 +43,16 @@ public class TodoController {
     @RequestMapping(value = "/list-todos", method = RequestMethod.GET)
     public String getListTodos(ModelMap model) {
         String name = userService.getCurrentUser();
-        model.put("todos", todoService.retrieveTodos(name));
+        List<Todo> todos = todoService.retrieveTodos(name);
+        System.out.println(todos);
+        model.put("todos", todos);
         return "list-todos";
     }
 
     @RequestMapping(value = "/add-todo", method = RequestMethod.GET)
     public String getAddTodo(ModelMap model) {
-        model.addAttribute("todo", new Todo(0,
-                userService.getCurrentUser(),
+        model.addAttribute("todo", new Todo(UUID.randomUUID(),
+                                                        userService.getCurrentUser(),
                                                         "Add description",
                                                         new Date(),
                                                         false));
@@ -52,15 +60,17 @@ public class TodoController {
     }
 
     @RequestMapping(value = "/update-todo", method = RequestMethod.GET)
-    public String getUpdateTodo(ModelMap model, @RequestParam int id) {
+    public String getUpdateTodo(ModelMap model, @RequestParam UUID id) {
+        System.out.println("todo to update has id " + id);
         model.addAttribute("todo", todoService.getTodoById(id));
+        System.out.println("found todo to update: " + todoService.getTodoById(id));
         return "todo";
     }
 
     @RequestMapping(value = "/delete-todo", method = RequestMethod.GET)
-    public String getDeleteTodo(@RequestParam int id) {
-//        if (id == 1)
-//            throw new RuntimeException();
+    public String getDeleteTodo(@RequestParam UUID id) {
+
+        System.out.println("todo to delete has id " + id);
         todoService.deleteTodo(id);
         return "redirect:/list-todos";
     }
@@ -72,8 +82,10 @@ public class TodoController {
             return "todo";
         }
 
-        todoService.addTodo(userService.getCurrentUser(), todo.getDesc(), new Date(),
-                false);
+        Todo saved = todoRepository.save(todo);
+        System.out.println("saved todo with id " + saved.getId());
+//        todoService.addTodo(userService.getCurrentUser(), todo.getDesc(), new Date(),
+//                false);
         return "redirect:/list-todos";
     }
 

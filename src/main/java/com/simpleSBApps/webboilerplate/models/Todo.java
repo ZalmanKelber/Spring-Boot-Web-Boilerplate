@@ -1,11 +1,20 @@
 package com.simpleSBApps.webboilerplate.models;
 
 import java.util.Date;
+import java.util.UUID;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.validation.constraints.Size;
 
+@Entity
 public class Todo {
-    private int id;
+
+    @Id
+    @GeneratedValue
+    private UUID id;
+
     private String user;
 
     @Size(min=5, message="Enter at least 5 Characters...")
@@ -14,11 +23,18 @@ public class Todo {
     private Date targetDate;
     private boolean isDone;
 
-    public Todo() {
+    protected Todo() { }
+
+    public Todo(String user, String desc, Date targetDate,
+                boolean isDone) {
         super();
+        this.user = user;
+        this.desc = desc;
+        this.targetDate = targetDate;
+        this.isDone = isDone;
     }
 
-    public Todo(int id, String user, String desc, Date targetDate,
+    public Todo(UUID id, String user, String desc, Date targetDate,
                 boolean isDone) {
         super();
         this.id = id;
@@ -28,11 +44,11 @@ public class Todo {
         this.isDone = isDone;
     }
 
-    public int getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -70,10 +86,7 @@ public class Todo {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        return result;
+        return id.hashCode();
     }
 
     @Override
@@ -88,7 +101,7 @@ public class Todo {
             return false;
         }
         Todo other = (Todo) obj;
-        if (id != other.id) {
+        if (id.equals(other.id)) {
             return false;
         }
         return true;

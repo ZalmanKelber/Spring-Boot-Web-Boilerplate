@@ -1,9 +1,7 @@
 package com.simpleSBApps.webboilerplate.services;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.simpleSBApps.webboilerplate.models.Todo;
 import org.springframework.stereotype.Service;
@@ -14,10 +12,10 @@ public class TodoService {
     private static int todoCount = 3;
 
     static {
-        todos.add(new Todo(1, "Zalman", "Learn Prophecy", new Date(), false));
-        todos.add(new Todo(2, "Zalman", "Leave Corinth", new Date(), false));
-        todos.add(new Todo(3, "Zalman", "Kill Laios", new Date(), false));
-        todos.add(new Todo(4, "Zalman", "Defeat Sphinx", new Date(), false));
+        todos.add(new Todo(UUID.randomUUID(), "Zalman", "Learn Prophecy", new Date(), false));
+        todos.add(new Todo(UUID.randomUUID(), "Zalman", "Leave Corinth", new Date(), false));
+        todos.add(new Todo(UUID.randomUUID(), "Zalman", "Kill Laios", new Date(), false));
+        todos.add(new Todo(UUID.randomUUID(), "Zalman", "Defeat Sphinx", new Date(), false));
     }
 
     public List<Todo> retrieveTodos(String user) {
@@ -32,27 +30,26 @@ public class TodoService {
 
     public void addTodo(String name, String desc, Date targetDate,
                         boolean isDone) {
-        todos.add(new Todo(++todoCount, name, desc, targetDate, isDone));
+        todos.add(new Todo(name, desc, targetDate, isDone));
     }
 
-    public Todo getTodoById(int id) {
-        return todos.stream().filter(t -> t.getId() == id).findFirst().orElse(null);
+    public Todo getTodoById(UUID id) {
+        return todos.stream().filter(t -> t.getId().equals(id)).findFirst().orElse(null);
     }
 
     public void updateTodo(Todo todo) {
-        for (int i = 0; i < todos.size(); i++) {
-            if (todos.get(i).equals(todo)) {
-                todos.set(i, todo);
-                break;
-            }
-        }
+        System.out.println("todos before updateTodo: " + todos);
+        todos = todos.stream()
+                .map(t -> t.getId().equals(todo.getId()) ? todo : t)
+                .collect(Collectors.toList());
+        System.out.println("todos after updateTodo: " + todos);
     }
 
-    public void deleteTodo(int id) {
+    public void deleteTodo(UUID id) {
         Iterator<Todo> iterator = todos.iterator();
         while (iterator.hasNext()) {
             Todo todo = iterator.next();
-            if (todo.getId() == id) {
+            if (todo.getId().equals(id)) {
                 iterator.remove();
             }
         }
